@@ -14,12 +14,32 @@ class crowNER:
     '''建構子'''
     def __init__(self):
         # 自訂設定
-        self.model_args = NERArgs()
-        self.batch_size = 4
+        self.batch_size = 8
+        self.eval_batch_size = 8
         self.epochs = 10
-        # self.output_dir = f'outputs/bs-{self.batch_size}-epo-{self.epochs}/'
+        self.model_type = 'bert'
+        self.model_name = 'luhua/chinese_pretrain_mrc_macbert_large'
         self.output_dir = f'outputs/best_model/'
+
+        # 自訂參數
+        self.model_args = NERArgs()
+        self.model_args.evaluate_during_training = True
+        self.model_args.n_gpu = 1
+        # self.model_args.learning_rate = 4e-5   # 4e-5
+        # self.model_args.weight_decay = 1e-2
+        self.model_args.max_seq_length = 128
+        self.model_args.eval_batch_size = self.eval_batch_size
+        self.model_args.train_batch_size = self.batch_size
+        self.model_args.num_train_epochs = self.epochs
+        self.model_args.output_dir = self.output_dir
+        self.model_args.overwrite_output_dir = True
+        self.model_args.reprocess_input_data = True
+        self.model_args.use_multiprocessing = False
+        self.model_args.use_multiprocessing_for_evaluation = False
+        self.model_args.save_steps = -1
+        self.model_args.save_model_every_epoch = False
         self.model = None
+        self.output_dir = f'outputs/best_model/'
 
         # 不重複的 labels
         self.labels_list = [
@@ -40,24 +60,12 @@ class crowNER:
     def predict(self, list_sentences):
         try:
             if len(list_sentences) > 0:
-                # 自訂參數
-                self.model_args.evaluate_during_training = True
-                # self.model_args.labels_list = self.labels_list
-                self.model_args.train_batch_size = self.batch_size
-                self.model_args.num_train_epochs = self.epochs
-                self.model_args.output_dir = self.output_dir
-                self.model_args.overwrite_output_dir = True
-                self.model_args.reprocess_input_data = True
-                self.model_args.use_multiprocessing = False
-                self.model_args.save_model_every_epoch = False
-
                 # 模型設定
                 self.model = NERModel(
-                    "bert", 
-                    self.output_dir, # 這裡要放先前訓練好的模型路徑!!
+                    self.model_type, 
+                    self.model_name,
                     use_cuda = True, 
                     cuda_device = 0,
-                    labels = self.labels_list, 
                     args = self.model_args # 帶入自訂參數
                 )
 
