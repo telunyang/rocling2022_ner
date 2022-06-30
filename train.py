@@ -1,5 +1,5 @@
 # 匯入套件
-import logging, sys, os
+import logging, sys, os, traceback
 import pandas as pd
 from time import time
 from pprint import pprint
@@ -34,23 +34,23 @@ class crowNER:
         # 自訂設定
         self.batch_size = 64
         self.eval_batch_size = 64
-        self.epochs = 10
+        self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'outputs/'
+        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'outputs-bert-base-chinese/' # outputs-chinese-macbert-base/, outputs-bert-base-chinese/
 
         # 自訂參數
         self.model_args = NERArgs()
-        self.model_args.evaluate_during_training = True
         self.model_args.n_gpu = 1
+        self.model_args.evaluate_during_training = True
         self.model_args.eval_batch_size = self.eval_batch_size
         self.model_args.train_batch_size = self.batch_size
         self.model_args.num_train_epochs = self.epochs
         self.model_args.output_dir = self.output_dir
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
-        self.model_args.use_multiprocessing = True
-        self.model_args.use_multiprocessing_for_evaluation = True
+        self.model_args.use_multiprocessing = False
+        self.model_args.use_multiprocessing_for_evaluation = False
         # self.model_args.save_steps = -1
         # self.model_args.save_model_every_epoch = False
 
@@ -72,22 +72,20 @@ class crowNER:
             "B-TREAT","I-TREAT"
         ]
 
-        # self.model_args.labels_list = self.labels_list
-
     '''讀取資料集'''
     def read_data(self):
         try:
             # 將訓練資料轉換成 list of dict
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            # self.list_train += self.list_train + pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
+            self.list_train += self.list_train + pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
             # self.list_train += self.list_train + pd.read_json(self.path_eval_data, lines=True).values.tolist()
 
             # 手動切分
             shuffle(self.list_train) # 洗牌
             len_train_data = len(self.list_train) # 資料總數
-            middle = int(len_train_data * 0.7) # 訓練資料的總數
-            list_train = self.list_train[:middle] # 取得訓練資料
-            list_eval = self.list_train[middle:] # 取得評估資料
+            middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
+            list_train = self.list_train[:middle] # 取得訓練資料 (70%)
+            list_eval = self.list_train[middle:] # 取得評估資料 (30%)
 
             # 準備訓練與評估資料
             self.list_train = list_train
@@ -179,7 +177,7 @@ class crowNER:
                 self.model_name,
                 use_cuda = True, 
                 cuda_device = 0,
-                labels = self.labels_list,
+                labels = self.labels,
                 args = self.model_args # 帶入自訂參數
             )
 
@@ -199,7 +197,7 @@ class crowNER:
             print("=== 評估結果 ===")
             pprint(result)
         except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
+            eexc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
             print(str(e))
