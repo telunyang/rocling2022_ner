@@ -1,16 +1,3 @@
-'''
-嘗試過的 pre-trained model
-https://huggingface.co/bert-base-chinese
-https://huggingface.co/hfl/rbt6
-https://huggingface.co/luhua/chinese_pretrain_mrc_macbert_large
-
-
-尚未嘗試的 pre-trained model
-https://huggingface.co/hfl/chinese-macbert-large
-https://huggingface.co/hfl/chinese-macbert-base
-https://huggingface.co/9pinus/macbert-base-chinese-medical-collation
-'''
-
 # 匯入套件
 import logging, sys, os
 import pandas as pd
@@ -41,56 +28,71 @@ class crowNER:
 
         # 訓練資料檔案路徑 與 評估(測試)資料檔案路徑
         self.path_train_data = './dataset/train.json'
-        self.path_train_data_1 = './dataset/ccks2018_m.json'
+        self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
         self.path_eval_data = './dataset/test.json'
 
         # 自訂設定
-        self.batch_size = 8
-        self.eval_batch_size = 8
+        self.batch_size = 64
+        self.eval_batch_size = 64
         self.epochs = 10
         self.model_type = 'bert'
-        self.model_name = 'luhua/chinese_pretrain_mrc_macbert_large'
-        self.output_dir = f'outputs/models/'
+        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'outputs/'
 
         # 自訂參數
         self.model_args = NERArgs()
         self.model_args.evaluate_during_training = True
         self.model_args.n_gpu = 1
-        # self.model_args.learning_rate = 4e-5   # 4e-5
-        # self.model_args.weight_decay = 1e-2
-        self.model_args.max_seq_length = 128
         self.model_args.eval_batch_size = self.eval_batch_size
         self.model_args.train_batch_size = self.batch_size
         self.model_args.num_train_epochs = self.epochs
         self.model_args.output_dir = self.output_dir
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
-        self.model_args.use_multiprocessing = False
-        self.model_args.use_multiprocessing_for_evaluation = False
-        self.model_args.save_steps = -1
-        self.model_args.save_model_every_epoch = False
+        self.model_args.use_multiprocessing = True
+        self.model_args.use_multiprocessing_for_evaluation = True
+        # self.model_args.save_steps = -1
+        # self.model_args.save_model_every_epoch = False
+
+        # model 變數初始化
         self.model = None
+
+        # 不重複的 labels
+        self.labels = [
+            "O",
+            "B-BODY","I-BODY",
+            "B-CHEM","I-CHEM",
+            "B-DISE","I-DISE",
+            "B-DRUG","I-DRUG",
+            "B-EXAM","I-EXAM",
+            "B-INST","I-INST",
+            "B-SUPP","I-SUPP",
+            "B-SYMP","I-SYMP",
+            "B-TIME","I-TIME",
+            "B-TREAT","I-TREAT"
+        ]
+
+        # self.model_args.labels_list = self.labels_list
 
     '''讀取資料集'''
     def read_data(self):
         try:
-            # 讀取 dataframe (來自 train.json)
-            self.df_train = pd.read_json(self.path_train_data, lines=True)
-
             # 將訓練資料轉換成 list of dict
-            self.list_train = self.df_train.values.tolist()
+            self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
+            # self.list_train += self.list_train + pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
+            # self.list_train += self.list_train + pd.read_json(self.path_eval_data, lines=True).values.tolist()
 
-            # 讀取 dataframe (來自 ccks2018_m.json)
-            self.df_train_1 = pd.read_json(self.path_train_data_1, lines=True)
+            # 手動切分
+            shuffle(self.list_train) # 洗牌
+            len_train_data = len(self.list_train) # 資料總數
+            middle = int(len_train_data * 0.7) # 訓練資料的總數
+            list_train = self.list_train[:middle] # 取得訓練資料
+            list_eval = self.list_train[middle:] # 取得評估資料
 
-            # 將訓練資料轉換成 list of dict
-            self.list_train_1 = self.df_train_1.values.tolist()
+            # 準備訓練與評估資料
+            self.list_train = list_train
+            self.list_eval = list_eval
 
-            # 讀取 dataframe (來自 test.json)
-            self.df_eval = pd.read_json(self.path_eval_data, lines=True)
-
-            # 將評估(測試)資料轉換成 list of dict
-            self.list_eval = self.df_eval.values.tolist()
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -113,18 +115,7 @@ class crowNER:
                     self.train_data.append([
                         line[0], char, line[6][idx]
                     ])
-                    self.set_labels.add(line[6][idx]) # 整理出不重複的 labels
-
-            for line in self.list_train_1:
-                # character-based
-                for idx, char in enumerate(line[5]):
-                    self.train_data.append([
-                        line[0], char, line[6][idx]
-                    ])
-
-            # 整理 labels 資料，提供給 model args 使用
-            self.labels_list = list(self.set_labels)
-            self.model_args.labels_list = self.labels_list
+                    # self.set_labels.add(line[6][idx]) # 整理出不重複的 labels
 
             # 建立 dataframe 的 headers
             self.train_data = pd.DataFrame(
@@ -144,6 +135,7 @@ class crowNER:
                     self.eval_data.append([
                         line[0], char, line[6][idx]
                     ])
+                    
             # 建立 dataframe 的 headers
             self.eval_data = pd.DataFrame(
                 self.eval_data, columns = ["sentence_id", "words", "labels"]
@@ -187,6 +179,7 @@ class crowNER:
                 self.model_name,
                 use_cuda = True, 
                 cuda_device = 0,
+                labels = self.labels_list,
                 args = self.model_args # 帶入自訂參數
             )
 
@@ -224,12 +217,12 @@ if __name__ == "__main__":
         # 轉換成訓練與評估資料
         obj.convert_data()
 
-        # 預覽資料
-        pprint(obj.get_head_data('train', 10))
-        pprint(obj.get_head_data('eval', 10))
+        # # 預覽資料
+        # pprint(obj.get_head_data('train', 10))
+        # pprint(obj.get_head_data('eval', 10))
 
-        # 將 dataframe 儲存成 csv
-        obj.save_to_csv()
+        # # 將 dataframe 儲存成 csv
+        # obj.save_to_csv()
 
         # 訓練模型
         obj.train()
@@ -240,5 +233,6 @@ if __name__ == "__main__":
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
+        print(str(e))
 
     print(f"整體執行時間: {time() - time_s} 秒")

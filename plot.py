@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-path = './outputs/bs-64-epo-10/training_progress_scores.csv'
+path = './outputs/training_progress_scores.csv'
 df = pd.read_csv(path)
 print(df)
 
