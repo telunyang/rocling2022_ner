@@ -36,8 +36,8 @@ class crowNER:
         self.eval_batch_size = 64
         self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'outputs-bert-base-chinese/' # outputs-chinese-macbert-base/, outputs-bert-base-chinese/
+        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'outputs-chinese-macbert-base/' # outputs-chinese-macbert-base/, outputs-bert-base-chinese/
 
         # 自訂參數
         self.model_args = NERArgs()
@@ -84,8 +84,8 @@ class crowNER:
             shuffle(self.list_train) # 洗牌
             len_train_data = len(self.list_train) # 資料總數
             middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
-            list_train = self.list_train[:middle] # 取得訓練資料 (70%)
-            list_eval = self.list_train[middle:] # 取得評估資料 (30%)
+            list_train = self.list_train[:middle] # 透過 sliding 取得訓練資料 (70%)
+            list_eval = self.list_train[middle:] # 透過 sliding 取得評估資料 (30%)
 
             # 準備訓練與評估資料
             self.list_train = list_train
