@@ -44,6 +44,6 @@ GPU: 1080 Gaming 8G
   - epochs: 30
   - 16268.5659 秒 => 約略 4.519 小時
 - chinese-macbert-base
-  - batch size: 
-  - epochs: 
-  -  秒 => 約略  小時
+  - batch size: 64
+  - epochs: 30
+  - 16363.2973 秒 => 約略 4.5454 小時
