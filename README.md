@@ -36,7 +36,10 @@ pip install opencc
   - [NER + Chinese](https://huggingface.co/models?sort=downloads&search=ner+chinese)
 
 ## 顯示卡型號
-GPU: 1080 Gaming 8G
+- 桌機 (主要訓練用)
+  - GPU: 1080 Gaming 8G
+- 筆電 (測試訓練程式用)
+  - GPU: 2070 Max-Q Design
 
 ## 訓練花費時間
 - bert-base-chinese
