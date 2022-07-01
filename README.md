@@ -20,3 +20,9 @@ pip install matplotlib
 ## 預訓練模型選擇
 - [HuggingFace](https://huggingface.co/) 首頁
   - [NER + Chinese](https://huggingface.co/models?sort=downloads&search=ner+chinese)
+
+# 訓練花費時間
+- bert-base-chinese
+  - 16268.5659 秒 => 約略 4.519 小時
+- chinese-macbert-base
+  -  秒 => 約略  小時
