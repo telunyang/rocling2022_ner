@@ -28,6 +28,7 @@ class crowNER:
 
         # 訓練資料檔案路徑 與 評估(測試)資料檔案路徑
         self.path_train_data = './dataset/train.json'
+        self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
         self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
         self.path_eval_data = './dataset/test.json'
 
@@ -36,8 +37,8 @@ class crowNER:
         self.eval_batch_size = 64
         self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'outputs-chinese-macbert-base/' # outputs-chinese-macbert-base/, outputs-bert-base-chinese/
+        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'outputs_bert-base-chinese_T04/' # outputs_chinese-macbert-base_T01/, outputs_bert-base-chinese_T01/
 
         # 自訂參數
         self.model_args = NERArgs()
@@ -77,15 +78,16 @@ class crowNER:
         try:
             # 將訓練資料轉換成 list of dict
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            self.list_train += self.list_train + pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
-            # self.list_train += self.list_train + pd.read_json(self.path_eval_data, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
 
             # 手動切分
             shuffle(self.list_train) # 洗牌
             len_train_data = len(self.list_train) # 資料總數
             middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
-            list_train = self.list_train[:middle] # 透過 sliding 取得訓練資料 (70%)
-            list_eval = self.list_train[middle:] # 透過 sliding 取得評估資料 (30%)
+            list_train = self.list_train[:middle] # 透過 slicing 取得訓練資料 (70%)
+            list_eval = self.list_train[middle:] # 透過 slicing 取得評估資料 (30%)
 
             # 準備訓練與評估資料
             self.list_train = list_train
@@ -101,19 +103,11 @@ class crowNER:
     def convert_data(self):
         try:
             for line in self.list_train:
-                # word-based
-                # for idx, word in enumerate(line[3]):
-                #     train_data.append([
-                #         line[0], word, line[4][idx]
-                #     ])
-                #     set_train_labels.add(line[4][idx]) # 整理出不重複的 labels
-
                 # character-based
                 for idx, char in enumerate(line[5]):
                     self.train_data.append([
                         line[0], char, line[6][idx]
                     ])
-                    # self.set_labels.add(line[6][idx]) # 整理出不重複的 labels
 
             # 建立 dataframe 的 headers
             self.train_data = pd.DataFrame(
@@ -122,12 +116,6 @@ class crowNER:
 
             # 整理評估資料
             for line in self.list_eval:
-                # word-based
-                # for idx, word in enumerate(line[3]):
-                #     eval_data.append([
-                #         line[0], word, line[4][idx]
-                #     ])
-
                 # character-based
                 for idx, char in enumerate(line[5]):
                     self.eval_data.append([
