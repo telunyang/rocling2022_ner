@@ -2,4 +2,4 @@ cache_dir
 outputs
 runs
 dataset
-models
+model*
