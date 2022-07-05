@@ -3,7 +3,7 @@ body {
     padding-top: 5rem;
 }
 
-textarea#search_bar {
+textarea#search_bar, textarea#export_json {
     height: 250px;
 }
 
