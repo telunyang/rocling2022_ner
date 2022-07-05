@@ -17,9 +17,9 @@ pip install simpletransformers
 pip install matplotlib
 ```
 
-- Optional: opencc
+- Optional: opencc 與 flask
 ```python
-pip install opencc
+pip install opencc flask
 ```
 
 ## 程式檔案簡介
