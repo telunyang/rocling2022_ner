@@ -1,0 +1,323 @@
+/* 基本設定 */
+body {
+    padding-top: 5rem;
+}
+
+textarea#search_bar {
+    height: 250px;
+}
+
+.starter-template {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+}
+
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+* html .ui-autocomplete {
+    height: 100px;
+}
+
+
+
+
+/* NER tagger*/
+.entities {
+    line-height: 3; 
+}
+
+[data-entity] {
+    padding: 0.25em 0.35em;
+    margin: 0px 0.25em;
+    line-height: 1;
+    display: inline-block;
+    border-radius: 0.25em;
+    border: 1px solid; 
+}
+
+[data-entity]::after {
+    box-sizing: border-box;
+    content: attr(data-entity);
+    font-size: 0.6em;
+    line-height: 1;
+    padding: 0.35em;
+    border-radius: 0.35em;
+    text-transform: uppercase;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px 0px 0.1rem 0.5rem; 
+}
+
+/* B-BODY & I-BODY*/
+[data-entity][data-entity="B-BODY"] {
+    background: rgba(166, 226, 45, 0.2);
+    border-color: rgb(166, 226, 45); 
+}
+
+[data-entity][data-entity="B-BODY"]::after {
+    background: rgb(166, 226, 45); 
+}
+
+[data-entity][data-entity="I-BODY"] {
+    background: rgba(166, 226, 45, 0.2);
+    border-color: rgb(166, 226, 45); 
+}
+
+[data-entity][data-entity="I-BODY"]::after {
+    background: rgb(166, 226, 45); 
+}
+
+/* B-CHEM & I-CHEM */
+[data-entity][data-entity="B-CHEM"] {
+    background: rgba(224, 0, 132, 0.2);
+    border-color: rgb(224, 0, 132); 
+}
+
+[data-entity][data-entity="B-CHEM"]::after {
+    background: rgb(224, 0, 132); 
+}
+
+[data-entity][data-entity="I-CHEM"] {
+    background: rgba(224, 0, 132, 0.2);
+    border-color: rgb(224, 0, 132); 
+}
+
+[data-entity][data-entity="I-CHEM"]::after {
+    background: rgb(224, 0, 132); 
+}
+
+/* B-DISE & I-DISE */
+[data-entity][data-entity="B-DISE"] {
+    background: rgba(67, 198, 252, 0.2);
+    border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="B-DISE"]::after {
+    background: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="I-DISE"] {
+    background: rgba(67, 198, 252, 0.2);
+    border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="I-DISE"]::after {
+    background: rgb(67, 198, 252); 
+}
+
+/* B-DRUG & I-DRUG */
+[data-entity][data-entity="B-DRUG"] {
+    background: rgba(67, 198, 252, 0.2);
+    border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="B-DRUG"]::after {
+    background: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="I-DRUG"] {
+    background: rgba(67, 198, 252, 0.2);
+    border-color: rgb(67, 198, 252); 
+}
+
+[data-entity][data-entity="I-DRUG"]::after {
+    background: rgb(67, 198, 252); 
+}
+
+/* B-EXAM & I-EXAM */
+[data-entity][data-entity="B-EXAM"] {
+    background: rgba(253, 151, 32, 0.2);
+    border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="B-EXAM"]::after {
+    background: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="I-EXAM"] {
+    background: rgba(253, 151, 32, 0.2);
+    border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="I-EXAM"]::after {
+    background: rgb(253, 151, 32); 
+}
+
+/* B-INST & I-INST */
+[data-entity][data-entity="B-INST"] {
+    background: rgba(253, 151, 32, 0.2);
+    border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="B-INST"]::after {
+    background: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="I-INST"] {
+    background: rgba(253, 151, 32, 0.2);
+    border-color: rgb(253, 151, 32); 
+}
+
+[data-entity][data-entity="I-INST"]::after {
+    background: rgb(253, 151, 32); 
+}
+
+/* B-SUPP & I-SUPP*/
+[data-entity][data-entity="B-SUPP"] {
+    background: rgba(142, 125, 255, 0.2);
+    border-color: rgb(142, 125, 255); 
+}
+
+[data-entity][data-entity="B-SUPP"]::after {
+    background: rgb(142, 125, 255); 
+}
+
+[data-entity][data-entity="I-SUPP"] {
+    background: rgba(142, 125, 255, 0.2);
+    border-color: rgb(142, 125, 255); 
+}
+
+[data-entity][data-entity="I-SUPP"]::after {
+    background: rgb(142, 125, 255); 
+}
+
+/* B-SYMP & I-SYMP*/
+[data-entity][data-entity="B-SYMP"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="B-SYMP"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-SYMP"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-SYMP"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+/* B-TIME & I-TIME*/
+[data-entity][data-entity="B-TIMEt"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="B-TIME"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-TIME"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-TIME"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+/* B-TREAT & I-TREAT*/
+[data-entity][data-entity="B-TREAT"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="B-TREAT"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-TREAT"] {
+    background: rgba(255, 204, 0, 0.2);
+    border-color: rgb(255, 204, 0); 
+}
+
+[data-entity][data-entity="I-TREAT"]::after {
+    background: rgb(255, 204, 0); 
+}
+
+/* 
+[data-entity][data-entity="date"] {
+    background: rgba(47, 187, 171, 0.2);
+    border-color: rgb(47, 187, 171); 
+}
+
+[data-entity][data-entity="date"]::after {
+    background: rgb(47, 187, 171); 
+}
+
+[data-entity][data-entity="time"] {
+    background: rgba(47, 187, 171, 0.2);
+    border-color: rgb(47, 187, 171); 
+}
+
+[data-entity][data-entity="time"]::after {
+    background: rgb(47, 187, 171); 
+}
+
+[data-entity][data-entity="percent"] {
+    background: rgba(153, 153, 153, 0.2);
+    border-color: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="percent"]::after {
+    background: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="money"] {
+    background: rgba(153, 153, 153, 0.2);
+    border-color: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="money"]::after {
+    background: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="quantity"] {
+    background: rgba(153, 153, 153, 0.2);
+    border-color: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="quantity"]::after {
+    background: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="ordinal"] {
+    background: rgba(153, 153, 153, 0.2);
+    border-color: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="ordinal"]::after {
+    background: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="cardinal"] {
+    background: rgba(153, 153, 153, 0.2);
+    border-color: rgb(153, 153, 153); 
+}
+
+[data-entity][data-entity="cardinal"]::after {
+    background: rgb(153, 153, 153); 
+} */
