@@ -17,8 +17,7 @@ class crowNER:
     '''建構子'''
     def __init__(self):
         # 放置訓練與評估資料
-        self.train_data = []
-        self.eval_data = []
+        self.train_data = self.eval_data = self.list_train = self.list_eval = []
 
         # 訓練資料檔案路徑 (與 評估資料檔案路徑)
         self.path_train_data = './dataset/train.json'
@@ -26,28 +25,34 @@ class crowNER:
         self.path_eval_data = './dataset/test.json'
         self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
 
+        # 是否獨立訓練模型，省略評估
+        self.is_standalone = True
+
         # 自訂設定
         self.batch_size = 64
         self.eval_batch_size = 64
         self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_chinese-macbert-base_T04/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
+        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'model_bert-base-chinese_standalone/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
 
         # 設定參數
         self.model_args = NERArgs()
         self.model_args.n_gpu = 1
-        self.model_args.evaluate_during_training = True
-        self.model_args.eval_batch_size = self.eval_batch_size
         self.model_args.train_batch_size = self.batch_size
         self.model_args.num_train_epochs = self.epochs
         self.model_args.output_dir = self.output_dir
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
         self.model_args.use_multiprocessing = False
-        self.model_args.use_multiprocessing_for_evaluation = False
         # self.model_args.save_steps = -1
         # self.model_args.save_model_every_epoch = False
+
+        # 是否獨立訓練模型，省略評估
+        if not self.is_standalone:
+            self.model_args.evaluate_during_training = True
+            self.model_args.eval_batch_size = self.eval_batch_size
+            self.model_args.use_multiprocessing_for_evaluation = False
 
         # model 變數初始化
         self.model = None
@@ -76,17 +81,19 @@ class crowNER:
             self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
             self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
 
-            # 資料切分
-            shuffle(self.list_train) # 洗牌
-            len_train_data = len(self.list_train) # 資料總數
-            middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
-            list_train = self.list_train[:middle] # 透過 slicing 取得訓練資料 (70%)
-            list_eval = self.list_train[middle:] # 透過 slicing 取得評估資料 (30%)
+            # 是否獨立訓練模型，省略評估
+            if not self.is_standalone:
+                # 資料切分
+                shuffle(self.list_train) # 洗牌
+                len_train_data = len(self.list_train) # 資料總數
+                middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
+                list_train = self.list_train[:middle] # 透過 slicing 取得訓練資料 (70%)
+                list_eval = self.list_train[middle:] # 透過 slicing 取得評估資料 (30%)
 
-            # 準備訓練與評估資料
-            self.list_train = list_train
-            self.list_eval = list_eval
-
+                # 準備訓練資料與評估資料
+                self.list_train = list_train
+                self.list_eval = list_eval
+                
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -109,14 +116,16 @@ class crowNER:
                 self.train_data, columns = ["sentence_id", "words", "labels"]
             )
 
-            # 整理評估資料
-            for line in self.list_eval:
-                # character-based
-                for idx, char in enumerate(line[5]):
-                    self.eval_data.append([
-                        line[0], char, line[6][idx]
-                    ])
-                    
+            # 是否獨立訓練模型，省略評估
+            if not self.is_standalone:
+                # 整理評估資料
+                for line in self.list_eval:
+                    # character-based
+                    for idx, char in enumerate(line[5]):
+                        self.eval_data.append([
+                            line[0], char, line[6][idx]
+                        ])
+                        
             # 建立評估資料的 dataframe headers
             self.eval_data = pd.DataFrame(
                 self.eval_data, columns = ["sentence_id", "words", "labels"]
@@ -208,8 +217,10 @@ if __name__ == "__main__":
         # 訓練模型
         obj.train()
 
-        # 評估模型
-        obj.eval()
+        # 是否獨立訓練模型，省略評估
+        if not obj.is_standalone:
+            # 評估模型
+            obj.eval()
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
