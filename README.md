@@ -1,5 +1,5 @@
 # crowNER
-
+團隊成員: 張智星教授、戚得郁、張秋霞、楊德倫
 
 ## 套件安裝
 - Step 1: PyTorch (GPU 版) [參考連結](https://pytorch.org/get-started/previous-versions/#linux-and-windows-13)
@@ -50,14 +50,20 @@ labels = [
 
 ## 預訓練模型選擇
 - [HuggingFace](https://huggingface.co/)
-  - bert-base-chinese
-  - chinese-macbert-base
+  - [bert-base-chinese](https://huggingface.co/bert-base-chinese)
+  - [hfl/chinese-macbert-base](https://huggingface.co/hfl/chinese-macbert-base)
+  - [ckiplab/albert-base-chinese-ner](https://huggingface.co/ckiplab/albert-base-chinese-ner)
+  - [hfl/rbt6](https://huggingface.co/hfl/rbt6)
 
 ## 顯示卡型號
 - 桌機 (主要訓練用)
   - GPU: 1080 Gaming 8G
 - 筆電 (測試訓練程式用)
   - GPU: 2070 Max-Q Design
+
+## 語料
+- [train.json、test.json](https://github.com/NCUEE-NLPLab/Chinese-HealthNER-Corpus)
+- ccks2017.json、ccks2018.json (由 秋霞、得郁 提供)
 
 ## 訓練設定
 - batch size: 64
@@ -103,10 +109,10 @@ labels = [
 
 |           | bert-base-chinese  | chinese-macbert-base |
 |:----------|:-------------------|:---------------------|
-| eval_loss | 0.28924876761516466 |  |
-| f1_score  | 0.7732702589890877 |  |
-| precision | 0.7432654464865691 |  |
-| recall    | 0.8057995028997514 |  |
+| eval_loss | 0.28924876761516466 | 0.28943906764189403 |
+| f1_score  | 0.7732702589890877 | 0.7731450956056316 |
+| precision | 0.7432654464865691 | 0.7449456257707687 |
+| recall    | 0.8057995028997514 | 0.8035635102995122 |
 
 ## 訓練花費時間
 | 實驗編號 | bert-base-chinese       | chinese-macbert-base     |
@@ -114,4 +120,4 @@ labels = [
 |   T01   | 3.11 小時               | 3.1244 小時               |
 |   T02   | 3.2153 小時             | 3.229  小時               |
 |   T03   | 3.3468 小時             | 3.344 小時                |
-|   T04   | 3.4939 小時             |  小時                |
+|   T04   | 3.4939 小時             | 3.5144 小時               |
