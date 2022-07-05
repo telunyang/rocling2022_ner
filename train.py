@@ -16,31 +16,25 @@ transformers_logger.setLevel(logging.WARNING)
 class crowNER:
     '''建構子'''
     def __init__(self):
-        # 放置符合訓練格式的資料 與 符合評估(測試)格式的資料
+        # 放置訓練與評估資料
         self.train_data = []
         self.eval_data = []
 
-        # 儲存不重複的 labels
-        self.set_labels = set()
-
-        # 不重複的 labels
-        self.labels_list = []
-
-        # 訓練資料檔案路徑 與 評估(測試)資料檔案路徑
+        # 訓練資料檔案路徑 (與 評估資料檔案路徑)
         self.path_train_data = './dataset/train.json'
-        self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
         self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
         self.path_eval_data = './dataset/test.json'
+        self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
 
         # 自訂設定
         self.batch_size = 64
         self.eval_batch_size = 64
         self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'outputs_bert-base-chinese_T04/' # outputs_chinese-macbert-base_T01/, outputs_bert-base-chinese_T01/
+        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'model_chinese-macbert-base_T04/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
 
-        # 自訂參數
+        # 設定參數
         self.model_args = NERArgs()
         self.model_args.n_gpu = 1
         self.model_args.evaluate_during_training = True
@@ -78,11 +72,11 @@ class crowNER:
         try:
             # 將訓練資料轉換成 list of dict
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
             self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
             self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
 
-            # 手動切分
+            # 資料切分
             shuffle(self.list_train) # 洗牌
             len_train_data = len(self.list_train) # 資料總數
             middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
@@ -102,6 +96,7 @@ class crowNER:
     '''轉換資料'''
     def convert_data(self):
         try:
+            # 整理訓練資料
             for line in self.list_train:
                 # character-based
                 for idx, char in enumerate(line[5]):
@@ -109,7 +104,7 @@ class crowNER:
                         line[0], char, line[6][idx]
                     ])
 
-            # 建立 dataframe 的 headers
+            # 建立訓練資料的 dataframe headers
             self.train_data = pd.DataFrame(
                 self.train_data, columns = ["sentence_id", "words", "labels"]
             )
@@ -122,7 +117,7 @@ class crowNER:
                         line[0], char, line[6][idx]
                     ])
                     
-            # 建立 dataframe 的 headers
+            # 建立評估資料的 dataframe headers
             self.eval_data = pd.DataFrame(
                 self.eval_data, columns = ["sentence_id", "words", "labels"]
             )
@@ -161,12 +156,12 @@ class crowNER:
         try:
             # 模型設定
             self.model = NERModel(
-                self.model_type, 
+                self.model_type,
                 self.model_name,
-                use_cuda = True, 
+                use_cuda = True,
                 cuda_device = 0,
                 labels = self.labels,
-                args = self.model_args # 帶入自訂參數
+                args = self.model_args # 帶入參數
             )
 
             # 訓練模型
