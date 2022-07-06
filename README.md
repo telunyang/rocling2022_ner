@@ -29,7 +29,7 @@ pip install opencc flask
 - checkGPU.py: 確認電腦環境是否擁有 GPU
 - plot.py: 基本 plot 輸出/檢視
 - example.py: 基本的訓練與評估語法
-- cals.py: 計算 confusion matrix (尚未完工)
+- ~~cals.py: 計算 confusion matrix (尚未完工)~~
 
 ## NER 的 tokens
 ```python
