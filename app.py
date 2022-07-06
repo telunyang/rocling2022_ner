@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # 模型設定
 model_type = 'bert'
-output_dir = 'model_bert-base-chinese_standalone/'
+output_dir = './model_bert-base-chinese_standalone/'
 model = NERModel(
     model_type, 
     output_dir,
@@ -25,11 +25,6 @@ Templates
 @app.route('/', methods=['GET'])
 def index():
     return render_template('query.html')
-
-# # 套用網頁樣版(v2.0)
-# @app.route('/', methods=['GET'])
-# def index():
-#     return render_template('query_es_v2.html')
 
 '''Web API'''
 # 使用向量查詢
@@ -86,4 +81,4 @@ if __name__ == '__main__':
     app.run(
         debug=True,
         host='0.0.0.0', 
-        port=2022)
+        port=5566)
