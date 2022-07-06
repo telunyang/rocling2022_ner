@@ -3,8 +3,12 @@ body {
     padding-top: 5rem;
 }
 
-textarea#search_bar, textarea#export_json {
+textarea#search_bar {
     height: 250px;
+}
+
+textarea#export_json {
+    height: 500px;
 }
 
 .starter-template {
