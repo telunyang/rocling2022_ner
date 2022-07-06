@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="row mb-3 d-flex justify-content-center">
-            <button class="btn btn-success w-25" type="submit" id="btn_download">Download training data（JSON lines）</button>
+            <button class="btn btn-success w-25" type="submit" id="btn_download_json">Download<br>JSON lines</button>
         </div>
     </main><!-- /.container -->
 
@@ -81,92 +81,7 @@
         crossorigin="anonymous"></script>
 
     <!-- 自訂 JS -->
-    <script>
-    // 送出查詢
-    $(document).on('click', 'button#btn_query', function (event) {
-        event.preventDefault();
-
-        //設定時間變數
-        timeStart = timeEnd = 0
-
-        //計算開始時間
-        timeStart = Date.now() / 1000
-
-        //取得文字並要求輸入字數
-        let sentences = $('textarea#search_bar').val();
-        if (sentences.length === 0) { alert('請輸入文字'); return false; }
-
-        //取得 tbody 元素
-        let tbody_result = $('tbody#result');
-
-        //預設彈跳訊息
-        let html_msg = `<h1 id="msg">請稍候</h1>`
-
-        //浮現 blockUI
-        $.blockUI({ 
-            message: html_msg, 
-            css: { 
-                border: 'none', 
-                padding: '15px', 
-                backgroundColor: '#000', 
-                '-webkit-border-radius': '10px', 
-                '-moz-border-radius': '10px', 
-                opacity: .5, 
-                color: '#fff' 
-            }
-        });
-
-        //查詢文字
-        $.post(`./predict`, { sentences: sentences }, (obj) => {
-            //
-            if( !obj['success'] ){ alert(`${obj['info']}`); return false; }
-
-            //清空 tbody 內文
-            tbody_result.html('');
-            
-            //整合查詢結果
-            let sn = 1
-            for (let arr of obj['results']) {
-                console.log(arr);
-
-                // 整合 html 資料
-                let html = ``;
-                for(let o of arr){
-                    for(let char in o){
-                        if( o[char] == 'O' ){
-                            html += `${char}`;
-                        } else {
-                            html += `<mark data-entity="${o[char]}">${char}</mark>`;
-                        }
-                    }
-                }
-                tbody_result.append(`<tr>
-                    <th scope="row">${sn}</th>
-                    <td class="entities">${html}</td>
-                </tr>`);
-
-                //流水號遞增
-                sn++;
-            }
-
-            // 關閉 blockUI
-            $.unblockUI();
-
-            //計算結束時間
-            timeEnd = Date.now() / 1000
-
-            // //計算執行花費時間，顯示結果
-            // let div_msg = document.getElementById('liveToast');
-            // div_msg.querySelector('div.toast-body').innerText = `執行時間: ${timeEnd - timeStart} 秒`
-            // let toast = new bootstrap.Toast( div_msg );
-            // toast.show();
-
-            //執行花費時間顯示在按鈕旁邊
-            $('span#exec_secs').text(`${timeEnd - timeStart}`);
-        });
-    });
-    </script>
-
+    <script src="js/custom.js"></script>
 
     <!-- toast -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
