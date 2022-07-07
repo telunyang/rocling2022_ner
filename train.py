@@ -2,6 +2,7 @@
 import logging, sys, os, traceback
 import pandas as pd
 from time import time
+import uuid
 from pprint import pprint
 from random import shuffle
 from simpletransformers.ner import NERModel, NERArgs
@@ -21,12 +22,12 @@ class crowNER:
 
         # 訓練資料檔案路徑 (與 評估資料檔案路徑)
         self.path_train_data = './dataset/train.json'
-        self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
         self.path_eval_data = './dataset/test.json'
         self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
+        self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
 
         # 是否獨立訓練模型，省略評估
-        self.is_standalone = True
+        self.is_standalone = False
 
         # 自訂設定
         self.batch_size = 64
@@ -34,7 +35,7 @@ class crowNER:
         self.epochs = 30
         self.model_type = 'bert'
         self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_bert-base-chinese_standalone/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
+        self.output_dir = f'model_bert-base-chinese_T02/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
 
         # 設定參數
         self.model_args = NERArgs()
@@ -77,10 +78,10 @@ class crowNER:
         try:
             # 將訓練資料轉換成 list of dict
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
             self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
-            self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
-
+            # self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
+            # self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
+            
             # 是否獨立訓練模型，省略評估
             if not self.is_standalone:
                 # 資料切分
@@ -105,12 +106,15 @@ class crowNER:
         try:
             # 整理訓練資料
             for line in self.list_train:
+                # 產生 uuid
+                rant_uuid = uuid.uuid4()
+
                 # character-based
                 for idx, char in enumerate(line[5]):
                     self.train_data.append([
-                        line[0], char, line[6][idx]
+                        str(rant_uuid), char, line[6][idx]
                     ])
-
+            
             # 建立訓練資料的 dataframe headers
             self.train_data = pd.DataFrame(
                 self.train_data, columns = ["sentence_id", "words", "labels"]
@@ -118,12 +122,15 @@ class crowNER:
 
             # 是否獨立訓練模型，省略評估
             if not self.is_standalone:
+                # 產生 uuid
+                rant_uuid = uuid.uuid4()
+
                 # 整理評估資料
                 for line in self.list_eval:
                     # character-based
                     for idx, char in enumerate(line[5]):
                         self.eval_data.append([
-                            line[0], char, line[6][idx]
+                            str(rant_uuid), char, line[6][idx]
                         ])
                         
             # 建立評估資料的 dataframe headers
@@ -173,8 +180,12 @@ class crowNER:
                 args = self.model_args # 帶入參數
             )
 
-            # 訓練模型
-            self.model.train_model(self.train_data, eval_data = self.eval_data)
+            # 是否獨立訓練模型，省略評估
+            if not self.is_standalone:
+                self.model.train_model(self.train_data)
+            else:
+                self.model.train_model(self.train_data, eval_data = self.eval_data)
+                
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
