@@ -35,7 +35,7 @@ class crowNER:
         self.epochs = 30
         self.model_type = 'bert'
         self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_bert-base-chinese_T02/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
+        self.output_dir = f'model_bert-base-chinese_T01/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
 
         # 設定參數
         self.model_args = NERArgs()
@@ -78,7 +78,7 @@ class crowNER:
         try:
             # 將訓練資料轉換成 list of dict
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
+            # self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
             
