@@ -46,8 +46,8 @@ class crowNER:
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
         self.model_args.use_multiprocessing = False
-        # self.model_args.save_steps = -1
-        # self.model_args.save_model_every_epoch = False
+        self.model_args.save_model_every_epoch = True
+        self.model_args.save_steps = -1
 
         # 是否獨立訓練模型，省略評估
         if not self.is_standalone:
