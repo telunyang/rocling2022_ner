@@ -94,6 +94,8 @@ class crowNER:
                 # 準備訓練資料與評估資料
                 self.list_train = list_train
                 self.list_eval = list_eval
+                print( str(len(self.list_train)) )
+                print( str(len(self.list_eval)) )
                 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -182,9 +184,9 @@ class crowNER:
 
             # 是否獨立訓練模型，省略評估
             if not self.is_standalone:
-                self.model.train_model(self.train_data)
-            else:
                 self.model.train_model(self.train_data, eval_data = self.eval_data)
+            else:
+                self.model.train_model(self.train_data)
                 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
