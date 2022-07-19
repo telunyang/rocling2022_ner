@@ -159,13 +159,21 @@ def get_news_text():
                     if len( soup.select(str_css_selector) ) > 0:
                         # 另外儲存內文到記事本當中
                         with open(f"{folderPath}/{obj['newId']}.txt", "w", encoding="utf-8") as file:
-                            file.write( soup.select_one(str_css_selector).get_text() )
+                            # 放置所有元素當中的內文
+                            list_text = []
+
+                            # 整理出所有元素集合當中的內文
+                            for element in soup.select(str_css_selector):
+                                list_text.append(element.get_text().strip())
+
+                            # 寫入檔案
+                            file.write( '\n'.join(list_text) )
 
                         # 跳離迴圈，無須進行下一個 css 選擇器判斷
                         break
 
                 # 隨機等待 (politeness policy)
-                sleep( randint(1, 2) )
+                # sleep( randint(1, 2) )
             else:
                 print("網址請求失敗，建議使用 VPN 切換 IP")
                 print(f"title: {list_data[index]['newTitle']}")
@@ -193,8 +201,10 @@ if __name__ == "__main__":
     get_page_data()
     save_json()
     
-    # 資料處理與文章擷取
+    # 資料處理
     convert_encoded_text()
+    
+    # 文章擷取
     get_news_text()
 
 
