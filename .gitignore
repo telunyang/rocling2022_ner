@@ -4,3 +4,4 @@ runs
 dataset
 model*
 output*
+*.json
