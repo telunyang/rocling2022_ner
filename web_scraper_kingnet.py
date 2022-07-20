@@ -173,7 +173,8 @@ def get_news_text():
                         break
 
                 # 隨機等待 (politeness policy)
-                # sleep( randint(1, 2) )
+                sleep( randint(1, 2) )
+                sleep(1)
             else:
                 print("網址請求失敗，建議使用 VPN 切換 IP")
                 print(f"title: {list_data[index]['newTitle']}")
