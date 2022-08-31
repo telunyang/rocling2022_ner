@@ -1,3 +1,10 @@
+'''
+Training by SimpleTransformers
+
+NER  Minimal Start
+https://simpletransformers.ai/docs/ner-minimal-start/
+'''
+
 # 匯入套件
 import logging, sys, os, traceback
 import pandas as pd
@@ -25,9 +32,12 @@ class crowNER:
         self.path_eval_data = './dataset/test.json'
         self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
         self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
+        self.path_train_data_labelling = './dataset/labelling_train.json'
+        self.path_train_data_predicted_rocling22_test = './dataset/predicted-rocling22_test-trainingdata.json'
 
         # 是否獨立訓練模型，省略評估
         self.is_standalone = False
+        self.only_eval_by_validation_data = True
 
         # 自訂設定
         self.batch_size = 64
@@ -35,7 +45,14 @@ class crowNER:
         self.epochs = 30
         self.model_type = 'bert'
         self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_bert-base-chinese_T01/' # model_chinese-macbert-base_T01/, model_bert-base-chinese_T01/
+        self.output_dir = f'model_bert-base-chinese_train-test-label-standalone'
+        '''
+        model_bert-base-chinese_train-test-standalone
+        model_bert-base-chinese_train-test-label-standalone
+        model_bert-base-chinese_T01
+        model_bert-base-chinese_T02
+        model_bert-base-chinese_T03
+        '''
 
         # 設定參數
         self.model_args = NERArgs()
@@ -76,20 +93,33 @@ class crowNER:
     '''讀取資料集'''
     def read_data(self):
         try:
-            # 將訓練資料轉換成 list of dict
+            '''
+            將訓練資料轉換成 list of dict
+            '''
+            # 官方提供資料
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
+
+            # 外部取得資料
             # self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_labelling, lines=True).values.tolist()
+            # self.list_train += pd.read_json(self.path_train_data_predicted_rocling22_test, lines=True).values.tolist()
             
-            # 是否獨立訓練模型，省略評估
+            # 不選擇獨立訓練模型，則會進行評估
             if not self.is_standalone:
-                # 資料切分
-                shuffle(self.list_train) # 洗牌
-                len_train_data = len(self.list_train) # 資料總數
-                middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
-                list_train = self.list_train[:middle] # 透過 slicing 取得訓練資料 (70%)
-                list_eval = self.list_train[middle:] # 透過 slicing 取得評估資料 (30%)
+                # 確認是否僅用 test.json 進行 eval，否則使用 7:3 分
+                if self.only_eval_by_validation_data:
+                    # 僅用 test.json 進行 eval
+                    list_train = self.list_train
+                    list_eval = pd.read_json(self.path_eval_data, lines=True).values.tolist()
+                else:
+                    # 資料切分 7:3
+                    shuffle(self.list_train) # 洗牌
+                    len_train_data = len(self.list_train) # 資料總數
+                    middle = int(len_train_data * 0.7) # 訓練資料的總數 (70%)
+                    list_train = self.list_train[:middle] # 透過 slicing 取得訓練資料 (70%)
+                    list_eval = self.list_train[middle:] # 透過 slicing 取得評估資料 (30%)
 
                 # 準備訓練資料與評估資料
                 self.list_train = list_train
@@ -109,12 +139,12 @@ class crowNER:
             # 整理訓練資料
             for line in self.list_train:
                 # 產生 uuid
-                rant_uuid = uuid.uuid4()
+                rant_uuid = str(uuid.uuid4())
 
                 # character-based
                 for idx, char in enumerate(line[5]):
                     self.train_data.append([
-                        str(rant_uuid), char, line[6][idx]
+                        rant_uuid, char, line[6][idx]
                     ])
             
             # 建立訓練資料的 dataframe headers
@@ -125,14 +155,14 @@ class crowNER:
             # 是否獨立訓練模型，省略評估
             if not self.is_standalone:
                 # 產生 uuid
-                rant_uuid = uuid.uuid4()
+                rant_uuid = str(uuid.uuid4())
 
                 # 整理評估資料
                 for line in self.list_eval:
                     # character-based
                     for idx, char in enumerate(line[5]):
                         self.eval_data.append([
-                            str(rant_uuid), char, line[6][idx]
+                            rant_uuid, char, line[6][idx]
                         ])
                         
             # 建立評估資料的 dataframe headers
