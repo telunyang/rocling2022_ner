@@ -10,7 +10,13 @@ app = Flask(__name__)
 
 # 模型設定
 model_type = 'bert'
-output_dir = './model_bert-base-chinese_train_test_standalone/'
+
+'''
+./model_bert-base-chinese_train_test_standalone/
+./model_train-test-labelled-custom250sent_standalone
+'''
+output_dir = './model_train-test-labelled-custom250sent_standalone'
+
 model = NERModel(
     model_type, 
     output_dir,
