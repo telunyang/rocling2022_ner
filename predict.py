@@ -1,12 +1,9 @@
 # 匯入套件
-import pandas as pd
-from time import time
-from pprint import pprint
 from simpletransformers.ner import NERModel
 
 # 模型路徑
 model_type = 'bert'
-output_dir = 'model_bert-base-chinese_T01/'
+output_dir = 'model_bert-base-chinese_train-test-label-standalone/'
 
 if __name__ == "__main__":
     # 模型設定
@@ -19,8 +16,8 @@ if __name__ == "__main__":
 
     # 測試句子(可以有很多筆，都 append 在 list_sentences 當中)
     list_sentences = [
-        # '身體若有發炎較常導致該指數偏高，但若是病毒感染會合併發燒。',
-        # '修復肌肉與骨骼最重要的便是熱量、蛋白質與鈣質。',
+        '身體若有發炎較常導致該指數偏高，但若是病毒感染會合併發燒。',
+        '修復肌肉與骨骼最重要的便是熱量、蛋白質與鈣質。',
         '如何治療胃食道逆流症？'
     ]
 
