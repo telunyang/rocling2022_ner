@@ -36,8 +36,10 @@ class crowNER:
         self.path_train_data_predicted_rocling22_test = './dataset/predicted-rocling22_test-trainingdata.json'
 
         # 是否獨立訓練模型，省略評估
-        self.is_standalone = False
-        self.only_eval_by_validation_data = True
+        self.is_standalone = True
+
+        # 確認是否僅用 test.json 進行 eval
+        self.only_eval_by_validation_data = False
 
         # 自訂設定
         self.batch_size = 64
@@ -45,14 +47,7 @@ class crowNER:
         self.epochs = 30
         self.model_type = 'bert'
         self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_bert-base-chinese_train-test-label-standalone'
-        '''
-        model_bert-base-chinese_train-test-standalone
-        model_bert-base-chinese_train-test-label-standalone
-        model_bert-base-chinese_T01
-        model_bert-base-chinese_T02
-        model_bert-base-chinese_T03
-        '''
+        self.output_dir = f'model_train-test-labelled-custom250sent_standalone'
 
         # 設定參數
         self.model_args = NERArgs()
@@ -63,7 +58,7 @@ class crowNER:
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
         self.model_args.use_multiprocessing = False
-        self.model_args.save_model_every_epoch = True
+        self.model_args.save_model_every_epoch = False
         self.model_args.save_steps = -1
 
         # 是否獨立訓練模型，省略評估
@@ -98,13 +93,13 @@ class crowNER:
             '''
             # 官方提供資料
             self.list_train = pd.read_json(self.path_train_data, lines=True).values.tolist()
-            # self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_eval_data, lines=True).values.tolist()
 
             # 外部取得資料
             # self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
-            self.list_train += pd.read_json(self.path_train_data_labelling, lines=True).values.tolist()
-            # self.list_train += pd.read_json(self.path_train_data_predicted_rocling22_test, lines=True).values.tolist()
+            # self.list_train += pd.read_json(self.path_train_data_labelling, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_predicted_rocling22_test, lines=True).values.tolist()
             
             # 不選擇獨立訓練模型，則會進行評估
             if not self.is_standalone:
@@ -270,4 +265,4 @@ if __name__ == "__main__":
         print(exc_type, fname, exc_tb.tb_lineno)
         print(str(e))
 
-    print(f"整體執行時間: {time() - time_s} 秒")
+    print(f"轉換時間: {time() - time_s} 秒 => {(time() - time_s) / 60} 分鐘")
