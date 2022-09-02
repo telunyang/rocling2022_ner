@@ -63,16 +63,16 @@ def test_to_predict_data():
 def txt_to_train_data():
     # predict 結束後，產生的 test submission 檔案
     list_path_txt = [
-        './dataset/crowNER_Run1_train-test.txt',
-        './dataset/crowNER_Run2_train-test-custom250sent.txt',
-        './dataset/crowNER_Run3_train-test-labelled-custom250sent.txt'
+        './submissons/bert/crowNER_Run1_train-test.txt',
+        './submissons/bert/crowNER_Run2_train-test-custom250sent.txt',
+        './submissons/bert/crowNER_Run3_train-test-labelled-custom250sent.txt'
     ]
 
     # 將預測結果轉換成比對成效用的 json lines 格式
     list_path_save_to = [
-        './dataset/crowNER_Run1_train-test.json',
-        './dataset/crowNER_Run2_train-test-custom250sent.json',
-        './dataset/crowNER_Run3_train-test-labelled-custom250sent.json'
+        './submissons/bert/crowNER_Run1_train-test.json',
+        './submissons/bert/crowNER_Run2_train-test-custom250sent.json',
+        './submissons/bert/crowNER_Run3_train-test-labelled-custom250sent.json'
     ]
 
     # 走訪每一個 txt 檔
