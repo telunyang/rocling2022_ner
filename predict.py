@@ -4,19 +4,22 @@ from time import time
 from pprint import pprint
 import json
 
-# 模型路徑
-model_type = 'bert'
-# output_dir = './model_train-test_standalone'
-# output_dir = './model_train-test-custom250sent_standalone'
-output_dir = './model_train-test-labelled-custom250sent_standalone'
 
 # 官方提供 eval 資料 (被轉換過，非原始資料)
 path_eval_data = './dataset/ROCLING22_CHNER_test.json'
 
+# 模型類型
+model_type = 'bert'
+
+# 模型路徑
+output_dir = './model_train-test_standalone'
+# output_dir = './model_train-test-custom250sent_standalone'
+# output_dir = './model_train-test-labelled-custom250sent_standalone'
+
 # eval 結果儲存路徑
-# path_save_to = './crowNER_Run1_train-test.txt'
-# path_save_to = './crowNER_Run1_train-test-custom250sent.txt'
-path_save_to = './crowNER_Run1_train-test-labelled-custom250sent.txt'
+path_save_to = './crowNER_Run1_train-test.txt'
+# path_save_to = './crowNER_Run2_train-test-custom250sent.txt'
+# path_save_to = './crowNER_Run3_train-test-labelled-custom250sent.txt'
 
 if __name__ == "__main__":
     # 計算執行時間
@@ -36,14 +39,13 @@ if __name__ == "__main__":
     time_read_eval_data = time()
     with open(path_eval_data, "r", encoding="utf-8") as file:
         list_sentences = json.loads( file.read() )
+        print(len(list_sentences))
     print(f"比賽 test data 讀取時間: {time() - time_read_eval_data} 秒")
 
     # 使用模型預測 (split_on_space 預設為 True，將英文單字間的空白當作分隔符號，但中文不需要，所以要改成 False)
     time_predict = time()
     predictions, raw_outputs = model.predict(list_sentences, split_on_space=False)
     print(f"預測執行時間: {time() - time_predict} 秒")
-
-    # pprint(predictions)
 
 
 
@@ -54,7 +56,7 @@ if __name__ == "__main__":
     time_save_to = time()
     with open(path_save_to, "w", encoding="utf-8") as file:
         # list_result 裡面有許多 dict
-        for list_result in predictions:
+        for index, list_result in enumerate(predictions):           
             # 每個 dict_char 的 key 都是 character，其 label 為 BIO tag 格式 
             for dict_char in list_result:
                 '''
