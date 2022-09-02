@@ -46,8 +46,13 @@ class crowNER:
         self.eval_batch_size = 64
         self.epochs = 30
         self.model_type = 'bert'
-        self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_train-test-custom250sent_standalone'
+        self.model_name = 'hfl/chinese-macbert-base' # hfl/chinese-macbert-base , bert-base-chinese
+        self.output_dir = f'model_train-test-labelled-custom250sent_standalone'
+        '''
+        self.output_dir = 'model_train-test_standalone'
+        self.output_dir = 'model_train-test-custom250sent_standalone'
+        self.output_dir = 'model_train-test-labelled-custom250sent_standalone'
+        '''
 
         # 設定參數
         self.model_args = NERArgs()
@@ -99,7 +104,7 @@ class crowNER:
             # 外部取得資料
             # self.list_train += pd.read_json(self.path_train_data_ccks2017, lines=True).values.tolist()
             # self.list_train += pd.read_json(self.path_train_data_ccks2018, lines=True).values.tolist()
-            # self.list_train += pd.read_json(self.path_train_data_labelling, lines=True).values.tolist()
+            self.list_train += pd.read_json(self.path_train_data_labelling, lines=True).values.tolist()
             self.list_train += pd.read_json(self.path_train_data_predicted_rocling22_test, lines=True).values.tolist()
             
             # 不選擇獨立訓練模型，則會進行評估
