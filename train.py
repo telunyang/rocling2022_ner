@@ -30,10 +30,10 @@ class crowNER:
         # 訓練資料檔案路徑 (與 評估資料檔案路徑)
         self.path_train_data = './dataset/train.json'
         self.path_eval_data = './dataset/test.json'
-        self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
-        self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
+        # self.path_train_data_ccks2017 = './dataset/ccks2017_m.json'
+        # self.path_train_data_ccks2018 = './dataset/ccks2018_m.json'
         self.path_train_data_labelling = './dataset/labelling_train.json'
-        self.path_train_data_predicted_rocling22_test = './dataset/predicted-rocling22_test-trainingdata.json'
+        self.path_train_data_predicted_rocling22_test = './dataset/predicted-rocling22_test-trainingdata.json' # 250 句自標資料
 
         # 是否獨立訓練模型，省略評估
         self.is_standalone = True
@@ -47,7 +47,7 @@ class crowNER:
         self.epochs = 30
         self.model_type = 'bert'
         self.model_name = 'bert-base-chinese' # hfl/chinese-macbert-base , bert-base-chinese
-        self.output_dir = f'model_train-test-labelled-custom250sent_standalone'
+        self.output_dir = f'model_train-test-custom250sent_standalone'
 
         # 設定參數
         self.model_args = NERArgs()
@@ -58,6 +58,7 @@ class crowNER:
         self.model_args.overwrite_output_dir = True
         self.model_args.reprocess_input_data = True
         self.model_args.use_multiprocessing = False
+        self.model_args.max_seq_length = 192
         self.model_args.save_model_every_epoch = False
         self.model_args.save_steps = -1
 
