@@ -111,8 +111,7 @@ def txt_to_train_data():
             '''
             # 取得 raw data
             for raw_data in list_raw_sentence:
-                if raw_data == '\n': continue
-
+                # 基本 json line 儲存結構
                 obj = {
                     "id": str(uuid.uuid4()),
                     "genre": 'txt',
