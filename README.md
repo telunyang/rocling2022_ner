@@ -23,12 +23,16 @@ pip install opencc flask
 ```
 
 ## 程式檔案簡介
+- app.py: Flask 的 app.py
 - s2t.py: 簡轉繁體 (透過 OpenCC)
 - train.py: 訓練模型
 - predict.py: 人工評估成效
 - checkGPU.py: 確認電腦環境是否擁有 GPU
 - plot.py: 基本 plot 輸出/檢視
-- example.py: 基本的訓練與評估語法
+- example.py: 測試語法用的程式檔
+- check.py: 檢查關鍵字的數量
+- convert.py: 將夥伴的整理好的資料，轉換成訓練資料
+- web_scraper_kingnet.py: 取得 KingNet 網站的衛教資訊
 
 ## NER 的 tokens
 ```python
@@ -68,33 +72,5 @@ labels = [
 - batch size: 64
 - epochs: 30
 
-## 訓練 / 預測 結果
-- 2022-07-07 (實驗編號: T01)
-  - 訓練資料: train.json 取 70%
-  - 驗證資料: 訓練資料的另外 30%
-
-|           | bert-base-chinese  | chinese-macbert-base |
-|:----------|:-------------------|:---------------------|
-| eval_loss | 0.0010151309992032164 |  |
-| f1_score  | 0.994490291846113 |  |
-| precision | 0.9928658932045831 |  |
-| recall    | 0.9961200144595734 |  |
-
-- 2022-07-07 (實驗編號: T02)
-  - 訓練資料: train.json + test.json，取 70%
-  - 驗證資料: 訓練資料的另外 30%
-
-|           | bert-base-chinese  | chinese-macbert-base |
-|:----------|:-------------------|:---------------------|
-| eval_loss | 0.0009665362070964399 |  |
-| f1_score  | 0.9950256191289496 |  |
-| precision | 0.9934772877454011 |  |
-| recall    | 0.9965787841854299 |  |
-
-## 訓練花費時間
-| 實驗編號 | bert-base-chinese       | chinese-macbert-base     |
-|:-------:|------------------------:|-------------------------:|
-|   T01   | 2.7964 小時               |  小時               |
-|   T02   | 3.1944 小時             |   小時               |
-|   T03   |  小時             |  小時                |
-|   T04   |  小時             |  小時               |
+## 成果
+- [ACL Anthology: CrowNER at Rocling 2022 Shared Task: NER using MacBERT and Adversarial Training](https://aclanthology.org/2022.rocling-1.40/)
